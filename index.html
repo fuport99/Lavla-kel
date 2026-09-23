@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="brend">
+            <span class="mark">✦</span>
+            <span class="name">Лавка волшебницы Кель</span>
+            <span class="est">зелья · свитки · артефакты</span>
+        </div>
+        <button class="btn" id="openCartBtn">Мешочек покупок<span class="cartCount" id="cartCount">(0)</span></button>
+    </header>
+
+    <section class="lavkaInfo">
+        <div>
+            <span class="openEveryone">Открыто для тех, кто нашёл дверь</span>
+            <h1>То, что не купишь на обычном рынке</h1>
+            <p>Кель варит, пишет и заговаривает вещи вот уже которую сотню лет. Каждая склянка и свиток продаётся один
+                раз — второй такой не будет.</p>
+        </div>
+        <div class="lavkaIllustration">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="92" stroke="#b08d57" stroke-width="1" opacity="0.4" />
+                <path
+                    d="M85 60 h30 l6 20 c4 10 9 16 9 30 c0 20 -13 32 -30 32 c-17 0 -30 -12 -30 -32 c0 -14 5 -20 9 -30 Z"
+                    stroke="#d9b87e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M78 92 h44" stroke="#d9b87e" stroke-width="2" />
+                <circle cx="100" cy="118" r="4" fill="#d9b87e" />
+            </svg>
+        </div>
+    </section>
+
+    <section class="category" data-category="Зелья">
+        <h2>Зелья</h2>
+        <div class="grid"></div>
+    </section>
+
+    <section class="category" data-category="Свитки">
+        <h2>Свитки</h2>
+        <div class="grid"></div>
+    </section>
+
+    <section class="category" data-category="Артефакты">
+        <h2>Артефакты</h2>
+        <div class="grid"></div>
+    </section>
+
+
+    <footer>Всё, что здесь продано, обратно не принимается — Кель предупреждала честно</footer>
+
+    <div class="overlay" id="overlay"></div>
+    <aside class="cartPanel" id="cartPanel">
+        <div class="cartHeader">
+            <h2>Мешочек покупок</h2>
+            <button class="cartClose" id="closeCartBtn">✕</button>
+        </div>
+        <div class="cartItems" id="cartItems">
+            <p class="cartEmpty" id="cartEmpty">Мешочек пуст</p>
+        </div>
+        <div class="cartFooter">
+            <div class="cartTotal">
+                <span>Итого</span>
+                <span id="cartTotal">0 з.</span>
+            </div>
+            <button class="cartCheckout">Оплатить покупки</button>
+        </div>
+    </aside>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
