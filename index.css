@@ -561,3 +561,14 @@ footer {
     .cart-btn{ font-size: 14px; padding: 8px 12px; }
     section.category, .hero{ padding-left: 5vw; padding-right: 5vw; }
   }
+
+  @media (max-width: 300px) {
+    header,
+    section,
+    footer,
+    .overplay,
+    .cartPAnnel,
+    .productModal {
+        display: none !important;
+    }
+  }
