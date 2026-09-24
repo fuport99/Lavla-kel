@@ -10,6 +10,64 @@ const cartEmptyEl = document.getElementById('cartEmpty');
 const cartTotalEl = document.getElementById('cartTotal');
 const cartCountEl = document.getElementById('cartCount');
 
+const productOverlay = document.getElementById('productOverlay');
+const productModal = document.getElementById('productModal');
+const closeProductBtn = document.getElementById('closeProductBtn');
+const productModalBody = document.getElementById('productModalBody');
+
+function starsHtml(rating) {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+function renderProductModal(product) {
+    const reviews = Array.isArray(product.reviews) ? product.reviews.slice(0, 5) : [];
+    const videoId = product.videoId;
+
+    productModalBody.innerHTML = `
+        <div class="productHead">
+            <div class="icon"><img src="${product.avatar}" alt="${product.name}"></div>
+            <div>
+                <span class="tag">№ ${product.id}</span>
+                <h3>${product.name}</h3>
+                <span class="price">${product.price}</span>
+            </div>
+        </div>
+        <p class="desc">${product.description}</p>
+        ${videoId ? `
+        <div class="productVideo">
+            <iframe src="https://www.youtube-nocookie.com/embed/${videoId}" title="Видео о товаре"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+        </div>` : ''}
+        <h4 class="reviewsTitle">Отзывы искателей приключений</h4>
+        <div class="reviews">
+            ${reviews.map(r => `
+                <div class="reviewItem">
+                    <div class="reviewHead">
+                        <span class="reviewName">${r.name}</span>
+                        <span class="stars">${starsHtml(r.rating)}</span>
+                    </div>
+                    <p class="reviewText">${r.text}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function openProductModal(product) {
+    renderProductModal(product);
+    productOverlay.classList.add('open');
+    productModal.classList.add('open');
+}
+
+function closeProductModal() {
+    productOverlay.classList.remove('open');
+    productModal.classList.remove('open');
+}
+
+productOverlay.addEventListener('click', closeProductModal);
+closeProductBtn.addEventListener('click', closeProductModal);
+
 function openCart() {
     cartPanel.classList.add('open');
     overlay.classList.add('open');
@@ -97,6 +155,11 @@ function createCard(product) {
                 ${hasPrice ? `data-price="${priceDigits}"` : 'disabled'}>В мешочек</button>
         </div>
     `;
+
+    card.addEventListener('click', (e) => {
+        if (e.target.closest('.addBtn')) return;
+        openProductModal(product);
+    });
 
     return card;
 }
