@@ -4,12 +4,19 @@
     box-sizing: border-box;
 }
 
+html {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     color: #ede3d0;
     font-family: 'EB Garamond', serif;
     font-size: 17px;
     line-height: 1.5;
     background: #141f1a;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 h1,
@@ -154,7 +161,6 @@ header {
 }
 
 .icon {
-    color: var(--brass-light);
     height: 66px;
     display: flex;
     align-items: center;
@@ -184,6 +190,23 @@ header {
     font-size: 15px;
     margin: 0;
     flex-grow: 1;
+}
+
+.ratingBadge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    color: #d9b87e;
+    font-size: 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+}
+
+.ratingCount {
+    color: #b08d57;
+    font-size: 12px;
+    font-family: 'EB Garamond', serif;
+    font-weight: 400;
 }
 
 .row {
@@ -463,11 +486,6 @@ footer {
     font-size: 15px;
 }
 
-.modalLoading {
-    color: #b08d57;
-    font-style: italic;
-    padding: 10px 0;
-}
 
 .productVideo {
     position: relative;
@@ -550,25 +568,170 @@ footer {
     }
 }
 
-  @media (max-width: 760px){
-    .hero{ grid-template-columns: 1fr; padding-top: 36px; text-align:center; }
-    .hero-illustration{ order:-1; }
-    .hero p{ margin: 0 auto; }
-  }
-  @media (max-width: 420px){
-    header{ padding: 14px 5vw; }
-    .brand .name{ font-size: 19px; }
-    .cart-btn{ font-size: 14px; padding: 8px 12px; }
-    section.category, .hero{ padding-left: 5vw; padding-right: 5vw; }
-  }
-
-  @media (max-width: 300px) {
-    header,
-    section,
-    footer,
-    .overplay,
-    .cartPAnnel,
-    .productModal {
-        display: none !important;
+@media (max-width: 760px) {
+    .lavkaInfo {
+        grid-template-columns: 1fr;
+        padding-top: 36px;
+        text-align: center;
     }
-  }
+
+    .lavkaIllustration {
+        order: -1;
+    }
+
+    .lavkaInfo p {
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 420px) {
+    header {
+        padding: 14px 5vw;
+    }
+
+    .brend .name {
+        font-size: 19px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    section.category,
+    .lavkaInfo {
+        padding-left: 5vw;
+        padding-right: 5vw;
+    }
+}
+
+/* Совсем маленькие экраны — умные часы (обычно ~180–260px по CSS-ширине) */
+@media (max-width: 260px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    body {
+        font-size: 13px;
+    }
+
+    header {
+        padding: 8px 4vw;
+        gap: 6px;
+    }
+
+    .brend {
+        gap: 4px;
+    }
+
+    .mark {
+        font-size: 18px;
+    }
+
+    .brend .name {
+        font-size: 14px;
+    }
+
+    .est {
+        display: none;
+    }
+
+    .btn {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+
+    .lavkaInfo {
+        padding: 20px 4vw 24px;
+        gap: 14px;
+    }
+
+    .openEveryone {
+        font-size: 11px;
+    }
+
+    .lavkaInfo h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .lavkaInfo p {
+        font-size: 12px;
+    }
+
+    .lavkaIllustration svg {
+        max-width: 140px;
+    }
+
+    .category {
+        padding: 0 4vw 6px;
+    }
+
+    .category h2 {
+        font-size: 17px;
+        margin: 22px 0 10px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .card {
+        padding: 12px 10px 10px;
+    }
+
+    .icon {
+        height: 46px;
+    }
+
+    .icon svg,
+    .icon img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .card h3 {
+        font-size: 15px;
+    }
+
+    .desc {
+        font-size: 12px;
+    }
+
+    .price {
+        font-size: 14px;
+    }
+
+    .addBtn {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .cartPanel {
+        width: 100vw;
+    }
+
+    .cartHeader h2 {
+        font-size: 16px;
+    }
+
+    .productModal {
+        width: 94vw;
+        padding: 14px 12px 18px;
+    }
+
+    .productHead h3 {
+        font-size: 17px;
+    }
+
+    .reviewsTitle {
+        font-size: 14px;
+    }
+
+    .reviewName,
+    .reviewText {
+        font-size: 12px;
+    }
+}

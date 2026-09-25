@@ -9,6 +9,7 @@ const cartItemsEl = document.getElementById('cartItems');
 const cartEmptyEl = document.getElementById('cartEmpty');
 const cartTotalEl = document.getElementById('cartTotal');
 const cartCountEl = document.getElementById('cartCount');
+const checkoutBtn = document.getElementById('checkoutBtn');
 
 const productOverlay = document.getElementById('productOverlay');
 const productModal = document.getElementById('productModal');
@@ -17,6 +18,18 @@ const productModalBody = document.getElementById('productModalBody');
 
 function starsHtml(rating) {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+function averageRating(product) {
+    if (!Array.isArray(product.reviews) || product.reviews.length === 0) return null;
+    const sum = product.reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0);
+    return sum / product.reviews.length;
+}
+
+function ratingBadgeHtml(product) {
+    const avg = averageRating(product);
+    if (avg === null) return '';
+    return `<span class="ratingBadge">★ ${avg.toFixed(1)} <span class="ratingCount">(${product.reviews.length})</span></span>`;
 }
 
 function renderProductModal(product) {
@@ -29,6 +42,7 @@ function renderProductModal(product) {
             <div>
                 <span class="tag">№ ${product.id}</span>
                 <h3>${product.name}</h3>
+                ${ratingBadgeHtml(product)}
                 <span class="price">${product.price}</span>
             </div>
         </div>
@@ -134,6 +148,20 @@ cartItemsEl.addEventListener('click', (e) => {
     }
 });
 
+checkoutBtn.addEventListener('click', () => {
+    if (cart.length === 0) {
+        alert('Мешочек пуст — сначала добавьте что-нибудь из лавки.');
+        return;
+    }
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    alert(`Заказ оформлен! Списано ${total} з. за ${cart.length} шт. Кель уже заворачивает покупки.`);
+
+    cart.length = 0;
+    renderCart();
+    closeCart();
+});
+
 function createCard(product) {
     const card = document.createElement('div');
     card.className = 'card';
@@ -148,6 +176,7 @@ function createCard(product) {
             <img src="${product.avatar}" alt="${product.name}">
         </div>
         <h3>${product.name}</h3>
+        ${ratingBadgeHtml(product)}
         <p class="desc">${product.description}</p>
         <div class="row">
             <span class="price">${product.price}</span>
