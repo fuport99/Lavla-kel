@@ -5,7 +5,6 @@
 }
 
 html {
-    max-width: 100%;
     overflow-x: hidden;
 }
 
@@ -15,8 +14,6 @@ body {
     font-size: 17px;
     line-height: 1.5;
     background: #141f1a;
-    max-width: 100%;
-    overflow-x: hidden;
 }
 
 h1,
@@ -25,7 +22,6 @@ h3 {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 600;
 }
-
 
 header {
     display: flex;
@@ -202,6 +198,22 @@ header {
     font-weight: 600;
 }
 
+.reviewBtn {
+    align-self: flex-start;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #b08d57;
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.reviewBtn:hover {
+    color: #d9b87e;
+}
+
 .ratingCount {
     color: #b08d57;
     font-size: 12px;
@@ -254,7 +266,10 @@ footer {
 
 .overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     background: rgba(10, 14, 12, 0.55);
     opacity: 0;
     pointer-events: none;
@@ -414,27 +429,21 @@ footer {
     background: #c9a066;
 }
 
+.productOverlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .productModal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
+    position: relative;
     width: min(600px, 92vw);
     max-height: 86vh;
+    max-height: 86dvh;
     overflow-y: auto;
     background: #1a251f;
     border: 1px solid #b08d57;
-    z-index: 31;
     padding: 26px 24px 30px;
-    transform: translate(-50%, -48%) scale(0.98);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.productModal.open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translate(-50%, -50%) scale(1);
 }
 
 .productModal .cartClose {
@@ -486,7 +495,6 @@ footer {
     font-size: 15px;
 }
 
-
 .productVideo {
     position: relative;
     width: 100%;
@@ -498,7 +506,8 @@ footer {
 
 .productVideo iframe {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     border: 0;
@@ -555,6 +564,54 @@ footer {
     margin: 0;
 }
 
+.reviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.reviewForm input,
+.reviewForm select,
+.reviewForm textarea {
+    width: 100%;
+    background: #141f1a;
+    border: 1px solid rgba(176, 141, 87, 0.5);
+    color: #ede3d0;
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    padding: 9px 10px;
+    border-radius: 0;
+}
+
+.reviewForm textarea {
+    resize: vertical;
+}
+
+.reviewForm input:focus,
+.reviewForm select:focus,
+.reviewForm textarea:focus {
+    outline: none;
+    border-color: #d9b87e;
+}
+
+.reviewForm:focus-within {
+    padding-bottom: 40vh;
+}
+
+.reviewForm button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.reviewStatus {
+    min-height: 1.4em;
+    color: #b08d57;
+    font-style: italic;
+    font-size: 14px;
+    margin: 0;
+}
+
 @media (max-width: 480px) {
     .productModal {
         padding: 20px 16px 24px;
@@ -605,12 +662,74 @@ footer {
     }
 }
 
-@media (max-width: 260px) {
-    html,
-    body {
-        overflow-x: hidden;
+@media (min-width: 761px) and (max-width: 1194px) {
+    header {
+        padding: 14px 5vw;
     }
 
+    .lavkaInfo {
+        padding: 44px 5vw 40px;
+        gap: 24px;
+    }
+
+    .category {
+        padding: 0 5vw 10px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 18px;
+    }
+
+    .cartPanel {
+        width: min(420px, 60vw);
+    }
+
+    .productModal {
+        width: min(680px, 88vw);
+    }
+}
+
+@media (pointer: coarse) {
+    .btn,
+    .addBtn,
+    .cartCheckout {
+        min-height: 44px;
+    }
+
+    .reviewBtn {
+        min-height: 32px;
+    }
+
+    .cartClose {
+        width: 40px;
+        height: 40px;
+    }
+
+    .cartItem .removeBtn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (hover: none) {
+    .card:hover {
+        border-color: rgba(176, 141, 87, 0.4);
+    }
+
+    .btn:hover,
+    .addBtn:hover,
+    .cartClose:hover {
+        background: transparent;
+        color: #ede3d0;
+    }
+
+    .cartCheckout:hover {
+        background: #b08d57;
+    }
+}
+
+@media (max-width: 260px) {
     body {
         font-size: 13px;
     }
@@ -708,6 +827,10 @@ footer {
         padding: 5px 8px;
     }
 
+    .reviewBtn {
+        font-size: 11px;
+    }
+
     .cartPanel {
         width: 100vw;
     }
@@ -732,5 +855,12 @@ footer {
     .reviewName,
     .reviewText {
         font-size: 12px;
+    }
+
+    .reviewForm input,
+    .reviewForm select,
+    .reviewForm textarea {
+        font-size: 12px;
+        padding: 6px 8px;
     }
 }

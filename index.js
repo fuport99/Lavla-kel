@@ -1,5 +1,8 @@
 const urlApi = 'https://6ab100ff9751d2b03e6cb959.mockapi.io/point/Lavka-kel';
+const urlReviews = 'https://6ab100ff9751d2b03e6cb959.mockapi.io/point/reviews';
 const cart = [];
+const cards = new Map();
+let currentProduct = null;
 
 const openCartBtn = document.getElementById('openCartBtn');
 const closeCartBtn = document.getElementById('closeCartBtn');
@@ -12,17 +15,27 @@ const cartCountEl = document.getElementById('cartCount');
 const checkoutBtn = document.getElementById('checkoutBtn');
 
 const productOverlay = document.getElementById('productOverlay');
-const productModal = document.getElementById('productModal');
 const closeProductBtn = document.getElementById('closeProductBtn');
 const productModalBody = document.getElementById('productModalBody');
 
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
+function safeRating(value) {
+    return Math.min(5, Math.max(1, Math.round(Number(value)) || 1));
+}
+
 function starsHtml(rating) {
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const r = safeRating(rating);
+    return '★'.repeat(r) + '☆'.repeat(5 - r);
 }
 
 function averageRating(product) {
     if (!Array.isArray(product.reviews) || product.reviews.length === 0) return null;
-    const sum = product.reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0);
+    const sum = product.reviews.reduce((s, r) => s + safeRating(r.rating), 0);
     return sum / product.reviews.length;
 }
 
@@ -32,8 +45,29 @@ function ratingBadgeHtml(product) {
     return `<span class="ratingBadge">★ ${avg.toFixed(1)} <span class="ratingCount">(${product.reviews.length})</span></span>`;
 }
 
+function updateRatingBadge(root, product) {
+    const html = ratingBadgeHtml(product);
+    const old = root.querySelector('.ratingBadge');
+    if (old) {
+        old.outerHTML = html;
+    } else {
+        root.querySelector('h3').insertAdjacentHTML('afterend', html);
+    }
+}
+
+function reviewItemHtml(r) {
+    return `
+                <div class="reviewItem">
+                    <div class="reviewHead">
+                        <span class="reviewName">${escapeHtml(r.name)}</span>
+                        <span class="stars">${starsHtml(r.rating)}</span>
+                    </div>
+                    <p class="reviewText">${escapeHtml(r.text)}</p>
+                </div>`;
+}
+
 function renderProductModal(product) {
-    const reviews = Array.isArray(product.reviews) ? product.reviews.slice(0, 5) : [];
+    const reviews = Array.isArray(product.reviews) ? product.reviews : [];
     const videoId = product.videoId;
 
     productModalBody.innerHTML = `
@@ -54,33 +88,90 @@ function renderProductModal(product) {
                 allowfullscreen></iframe>
         </div>` : ''}
         <h4 class="reviewsTitle">Отзывы искателей приключений</h4>
-        <div class="reviews">
-            ${reviews.map(r => `
-                <div class="reviewItem">
-                    <div class="reviewHead">
-                        <span class="reviewName">${r.name}</span>
-                        <span class="stars">${starsHtml(r.rating)}</span>
-                    </div>
-                    <p class="reviewText">${r.text}</p>
-                </div>
-            `).join('')}
-        </div>
+        <div class="reviews">${reviews.map(reviewItemHtml).join('')}</div>
+        <form class="reviewForm">
+            <h4 class="reviewsTitle">Оставить отзыв</h4>
+            <input name="name" type="text" placeholder="Ваше имя" maxlength="40" required>
+            <select name="rating" aria-label="Оценка">
+                <option value="5">★★★★★ — 5</option>
+                <option value="4">★★★★☆ — 4</option>
+                <option value="3">★★★☆☆ — 3</option>
+                <option value="2">★★☆☆☆ — 2</option>
+                <option value="1">★☆☆☆☆ — 1</option>
+            </select>
+            <textarea name="text" rows="3" placeholder="Что скажете о товаре?" maxlength="300" required></textarea>
+            <button type="submit" class="cartCheckout">Отправить отзыв</button>
+            <p class="reviewStatus"></p>
+        </form>
     `;
 }
 
-function openProductModal(product) {
+function openProductModal(product, scrollToForm = false) {
+    currentProduct = product;
     renderProductModal(product);
     productOverlay.classList.add('open');
-    productModal.classList.add('open');
+
+    if (scrollToForm) {
+        productModalBody.querySelector('.reviewForm').scrollIntoView({ block: 'start' });
+    }
 }
 
 function closeProductModal() {
     productOverlay.classList.remove('open');
-    productModal.classList.remove('open');
 }
 
-productOverlay.addEventListener('click', closeProductModal);
+productOverlay.addEventListener('click', (e) => {
+    if (e.target === productOverlay) closeProductModal();
+});
 closeProductBtn.addEventListener('click', closeProductModal);
+
+async function submitReview(form) {
+    const product = currentProduct;
+    const data = new FormData(form);
+    const review = {
+        productId: product.id,
+        name: data.get('name').trim(),
+        rating: safeRating(data.get('rating')),
+        text: data.get('text').trim()
+    };
+    if (!review.name || !review.text) return;
+
+    const button = form.querySelector('button');
+    const status = form.querySelector('.reviewStatus');
+    button.disabled = true;
+    status.textContent = 'Отправляем…';
+
+    try {
+        const response = await fetch(urlReviews, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(review)
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+        product.reviews = [...(product.reviews || []), review];
+        updateRatingBadge(cards.get(product.id), product);
+
+        if (currentProduct === product) {
+            const list = productModalBody.querySelector('.reviews');
+            list.insertAdjacentHTML('beforeend', reviewItemHtml(review));
+            list.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            updateRatingBadge(productModalBody, product);
+            form.reset();
+            status.textContent = 'Спасибо за отзыв!';
+        }
+    } catch (error) {
+        console.error('Не удалось отправить отзыв:', error);
+        status.textContent = 'Не удалось отправить отзыв. Попробуйте позже.';
+    }
+
+    button.disabled = false;
+}
+
+productModalBody.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains('reviewForm')) submitReview(e.target);
+});
 
 function openCart() {
     cartPanel.classList.add('open');
@@ -126,8 +217,6 @@ function renderCart() {
 
 function bindAddButtons() {
     document.querySelectorAll('.addBtn').forEach(btn => {
-        if (btn.disabled) return;
-
         btn.addEventListener('click', () => {
             cart.push({
                 name: btn.dataset.name,
@@ -178,6 +267,7 @@ function createCard(product) {
         <h3>${product.name}</h3>
         ${ratingBadgeHtml(product)}
         <p class="desc">${product.description}</p>
+        <button class="reviewBtn" type="button">Оставить отзыв</button>
         <div class="row">
             <span class="price">${product.price}</span>
             <button class="addBtn" data-name="${product.name}" data-tag="${tag}"
@@ -187,16 +277,37 @@ function createCard(product) {
 
     card.addEventListener('click', (e) => {
         if (e.target.closest('.addBtn')) return;
-        openProductModal(product);
+        openProductModal(product, Boolean(e.target.closest('.reviewBtn')));
     });
 
+    cards.set(product.id, card);
     return card;
+}
+
+async function loadUserReviews() {
+    try {
+        const response = await fetch(urlReviews);
+        if (!response.ok) return [];
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        return [];
+    }
 }
 
 async function loadProducts() {
     try {
-        const response = await fetch(urlApi);
-        const products = await response.json();
+        const [products, userReviews] = await Promise.all([
+            fetch(urlApi).then(response => response.json()),
+            loadUserReviews()
+        ]);
+
+        userReviews.forEach(review => {
+            const product = products.find(p => p.id === review.productId);
+            if (product) {
+                product.reviews = [...(product.reviews || []), review];
+            }
+        });
 
         products.forEach(product => {
             const grid = document.querySelector(`.category[data-category="${product.category}"] .grid`);
